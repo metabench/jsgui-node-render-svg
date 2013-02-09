@@ -33,13 +33,21 @@ module.exports = function (ins, out, ext, callback) {
             }, function () {
               temp.open({suffix: '.' + ext}, function (err, info) {
                 page.render(info.path, function (err) {
-                  fs.createReadStream(info.path).pipe(out);
+                  var in_stream = fs.createReadStream(info.path);
+                  in_stream.pipe(out);
                   
                   //console.log('page has rendered');
                   
                   ph.exit();
                   
-                  if (callback) callback();
+                  //if (callback) callback();
+                  in_stream.on('end', function() {
+                    if (callback) callback();
+                  });
+                  // callback when the read stream is done.
+                  
+                  
+                  
                 });
               });
             });
